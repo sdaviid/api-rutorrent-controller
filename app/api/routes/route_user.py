@@ -20,10 +20,6 @@ from app.models.schemas.user import(
 
 
 from app.core.database import get_db
-from app.core.uau import(
-    uau,
-    teste
-)
 
 
 router = APIRouter()
