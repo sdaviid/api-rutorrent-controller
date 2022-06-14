@@ -64,6 +64,8 @@ class ruTorrentClient(Thread):
                 'Authorization': f'Basic {authorization}'
             }
         return False
+    def has_hash(self, hash):
+        return True if hash in list(self.torrents.keys()) else False
     def kill(self):
         self.alive = False
     def run(self):
@@ -124,8 +126,7 @@ class ruTorrentClient(Thread):
                 }
                 response = requests.post(url, data=payload, headers=headers)
                 if response.status_code == 200:
-                    self.active = True
-                return response
+                    return response.json()
             except Exception as err:
                 print(f'ruTorrent.get_files_from exception - {err}')
         return False
@@ -187,6 +188,13 @@ class ruTorrentManager(Thread):
         for server in self.servers:
             if hash in server['server'].torrents:
                 return server['server'].torrents[hash]
+        return False
+    def get_files_by_hash(self, hash):
+        for server in self.servers:
+            if server['server'].has_hash(hash):
+                files = server['server'].get_files_from(hash)
+                torrent = server['server'].torrents[hash]
+                return {'files': files, 'torrent': torrent}
         return False
 
 

@@ -18,19 +18,6 @@ from utils.encode import(
     hash_torrent
 )
 
-# from app.models.domain.file import(
-#     File,
-#     FileStatus,
-#     FileData
-
-# )
-# from app.models.schemas.file import(
-#     FileAdd,
-#     FileDetail,
-#     FileStatusUpdate,
-#     FileAddData
-# )
-
 
 from app.core.database import get_db
 
@@ -50,11 +37,16 @@ async def create_upload_file(file: UploadFile, server: ruTorrentManager = Depend
     if os.path.isfile(path_file) == False:
         with open(path_file, 'wb') as f:
             f.write(contents)
-    dir
     hash = hash_torrent(path_file)
     server = get_ruTorrentManager().pick_server()
     server['server'].add_torrent(path_file)
-    return {"filename": file.filename, 'server': server['id'], 'server_name': server['name'], 'path': path_file, 'hash': hash_torrent(path_file)}
+    return {
+        'filename': file.filename, 
+        'server': server['id'],
+        'server_name': server['name'],
+        'path': path_file,
+        'hash': hash_torrent(path_file)
+    }
 
 
 @router.get(
@@ -90,64 +82,45 @@ def status_from_hash(hash: str, server: ruTorrentManager = Depends(get_ruTorrent
     if manager_instance:
         temp_data = manager_instance.find_hash(hash.upper())
         if temp_data:
-            return {'name': temp_data.name, 'size': temp_data.size, 'downloaded': temp_data.downloaded, 'speed_down': temp_data.speed_down, 'speed_up': temp_data.speed_up, 'path': temp_data.output_path}
+            return {
+                'name': temp_data.name, 
+                'size': temp_data.size, 
+                'downloaded': temp_data.downloaded, 
+                'speed_down': temp_data.speed_down, 
+                'speed_up': temp_data.speed_up, 
+                'path': temp_data.output_path
+            }
         else:
-            return {"error": True, "message": "didnt find hash"}
+            return {
+                "error": True,
+                "message": "didnt find hash"
+            }
     else:
-        return {"error": True}
+        return {
+            "error": True
+        }
 
 
-
-
-# @router.post(
-#     '/add',
-#     status_code=status.HTTP_200_OK,
-#     response_model=FileDetail
-# )
-# def add_file(data: FileAdd, response: Response, db: Session = Depends(get_db)):
-#     """List all logs"""
-#     return File.add(session=db, data=data)
-
-
-
-# @router.post(
-#     '/add-data',
-#     status_code=status.HTTP_200_OK,
-#     response_model=FileAddData
-# )
-# def add_file_data(data: FileAddData, response: Response, db: Session = Depends(get_db)):
-#     """List all logs"""
-#     return FileData.add(session=db, data=data)
-
-
-
-# @router.get(
-#     '/status-data/{id}',
-#     status_code=status.HTTP_200_OK,
-# )
-# def status_data_file(id: int, response: Response, db: Session = Depends(get_db)):
-#     """List all logs"""
-#     return FileData.find_by_id_file(session=db, id_file=id)
-
-
-
-
-# @router.get(
-#     '/status/{id}',
-#     status_code=status.HTTP_200_OK,
-#     response_model=FileDetail
-# )
-# def add_file(id: int, response: Response, db: Session = Depends(get_db)):
-#     """List all logs"""
-#     return File.find_by_id(session=db, id=id)
-
-
-
-# @router.put(
-#     '/update/{id}',
-#     status_code=status.HTTP_200_OK,
-#     response_model=FileDetail
-# )
-# def add_file(id: int, data: FileStatusUpdate, response: Response, db: Session = Depends(get_db)):
-#     """List all logs"""
-#     return File.update(session=db, id=id, data=data)
+@router.get(
+    '/files/{hash}'
+)
+def get_files(hash: str, server: ruTorrentManager = Depends(get_ruTorrentManager)):
+    manager_instance = get_ruTorrentManager()
+    if manager_instance:
+        temp_data = manager_instance.get_files_by_hash(hash.upper())
+        if temp_data:
+            data = {
+                'name': temp_data['torrent'].name,
+                'size': temp_data['torrent'].size,
+                'path': temp_data['torrent'].output_path,
+                'files': []
+            }
+            for item in temp_data['files']:
+                full_path = os.path.join(temp_data['torrent'].output_path, item[0])
+                data_file = {
+                    'name': item[0],
+                    'path': full_path
+                }
+                data['files'].append(data_file)
+            return data
+    return {"error": True}
