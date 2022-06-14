@@ -44,12 +44,13 @@ class ruTorrentData(object):
 
 
 class ruTorrentClient(Thread):
-    def __init__(self, name, base, user, password):
+    def __init__(self, name, base, user, password, serve):
         Thread.__init__(self)
         self.name = name
         self.base = base
         self.user = user
         self.password = password
+        self.serve = serve
         self.active = False
         self.torrents = {}
         self.server_free_space = None
@@ -170,10 +171,10 @@ class ruTorrentManager(Thread):
             if temp_list_servers:
                 for server in temp_list_servers:
                     if self.has_id(server.id) == False:
-                        self.add_server(id=server.id, name=server.name, base=server.base, user=server.user, password=server.password)
+                        self.add_server(id=server.id, name=server.name, base=server.base, user=server.user, password=server.password, serve=server.serve)
             time.sleep(10)
-    def add_server(self, id, name, base, user, password):
-        temp = ruTorrentClient(name, base, user, password)
+    def add_server(self, id, name, base, user, password, serve):
+        temp = ruTorrentClient(name, base, user, password, serve)
         if temp.connect():
             avoid = temp.start()
             self.servers.append({'id': id, 'name': name, 'server': temp})
@@ -194,7 +195,7 @@ class ruTorrentManager(Thread):
             if server['server'].has_hash(hash):
                 files = server['server'].get_files_from(hash)
                 torrent = server['server'].torrents[hash]
-                return {'files': files, 'torrent': torrent}
+                return {'files': files, 'torrent': torrent, 'server': server['server']}
         return False
 
 

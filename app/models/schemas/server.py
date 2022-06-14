@@ -9,6 +9,7 @@ class ServerAdd(baseSchema):
     base: str
     user: str
     password: str
+    serve: str
 
 
 
@@ -18,4 +19,5 @@ class ServerDetail(baseSchema):
     base: str
     user: str
     password: str
+    serve: str
     date_created: datetime

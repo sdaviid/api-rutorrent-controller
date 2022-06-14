@@ -25,6 +25,7 @@ class Server(ModelBase, Base):
     base = Column(String(255))
     user = Column(String(255))
     password = Column(String(255))
+    serve = Column(String(255))
     date_created = Column(DateTime, default=datetime.utcnow())
 
 
@@ -35,6 +36,7 @@ class Server(ModelBase, Base):
         server.base = data.base
         server.user = data.user
         server.password = data.password
+        server.serve = data.serve
         session.add(server)
         session.commit()
         session.refresh(server)
