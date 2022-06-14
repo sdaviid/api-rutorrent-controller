@@ -30,9 +30,9 @@ class ruTorrentData(object):
         if self.data:
             try:
                 self.name = self.data[4]
-                self.size = self.data[5]
-                self.downloaded = self.data[8]
-                self.speed_down = self.data[12]
+                self.size = int(self.data[5])
+                self.downloaded = int(self.data[8])
+                self.speed_down = int(self.data[12])
                 self.output_path = self.data[25]
             except Exception as err:
                 print(f'ruTorrentData.handler exception - {err}')

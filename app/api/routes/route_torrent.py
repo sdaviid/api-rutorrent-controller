@@ -119,7 +119,8 @@ def get_files(hash: str, server: ruTorrentManager = Depends(get_ruTorrentManager
                 full_path = os.path.join(temp_data['torrent'].output_path, item[0])
                 data_file = {
                     'name': item[0],
-                    'path': full_path
+                    'path': full_path,
+                    'size': int(item[3])
                 }
                 data['files'].append(data_file)
             return data
