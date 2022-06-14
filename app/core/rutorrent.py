@@ -14,7 +14,7 @@ from app.models.domain.server import(
 import random
 
 class ruTorrentData(object):
-    def __init__(self, client, data):
+    def __init__(self, client, data, hash):
         self.client = client
         self.data = data
         self.name = None
@@ -24,6 +24,7 @@ class ruTorrentData(object):
         self.speed_up = None
         self.seeders = None
         self.peers = None
+        self.hash = hash
         self.output_path = None
         self.handler()
     def handler(self):
@@ -111,7 +112,7 @@ class ruTorrentClient(Thread):
                     if key in self.torrents:
                         self.torrents[key].update(data.get(key, {}))
                     else:
-                        self.torrents.update({key: ruTorrentData(self, data.get(key, {}))})
+                        self.torrents.update({key: ruTorrentData(self, data.get(key, {}), key)})
                 return True
         return False
     def get_files_from(self, hash):

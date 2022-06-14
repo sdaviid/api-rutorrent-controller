@@ -63,6 +63,7 @@ def list_torrents(server: ruTorrentManager = Depends(get_ruTorrentManager)):
             torrent = item['server'].torrents[key]
             temp = {
                 'name': torrent.name,
+                'hash': torrent.hash,
                 'size': torrent.size,
                 'downloaded': torrent.downloaded,
                 'speed_down': torrent.speed_down,
@@ -83,7 +84,8 @@ def status_from_hash(hash: str, server: ruTorrentManager = Depends(get_ruTorrent
         temp_data = manager_instance.find_hash(hash.upper())
         if temp_data:
             return {
-                'name': temp_data.name, 
+                'name': temp_data.name,
+                'hash': temp_data.hash,
                 'size': temp_data.size, 
                 'downloaded': temp_data.downloaded, 
                 'speed_down': temp_data.speed_down, 
