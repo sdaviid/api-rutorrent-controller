@@ -1,4 +1,5 @@
 import requests
+from datetime import datetime
 from threading import Thread
 import time
 from utils.encode import(
@@ -26,6 +27,8 @@ class ruTorrentData(object):
         self.peers = None
         self.hash = hash
         self.output_path = None
+        self.added_datetime = None
+        self.added_unix = None
         self.handler()
     def handler(self):
         if self.data:
@@ -35,6 +38,8 @@ class ruTorrentData(object):
                 self.downloaded = int(self.data[8])
                 self.speed_down = int(self.data[12])
                 self.output_path = self.data[25]
+                self.added_unix = int(self.data[21])
+                self.added_datetime = datetime.strptime(datetime.utcfromtimestamp(self.added_unix).strftime('%Y-%m-%d %H:%M:%S'), '%Y-%m-%d %H:%M:%S')
             except Exception as err:
                 print(f'ruTorrentData.handler exception - {err}')
     def update(self, data):

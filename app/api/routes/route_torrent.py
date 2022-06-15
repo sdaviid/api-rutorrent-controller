@@ -68,7 +68,9 @@ def list_torrents(server: ruTorrentManager = Depends(get_ruTorrentManager)):
                 'downloaded': torrent.downloaded,
                 'speed_down': torrent.speed_down,
                 'speed_up': torrent.speed_up,
-                'path': torrent.output_path
+                'path': torrent.output_path,
+                'added_date': torrent.added_datetime,
+                'added_unix': torrent.added_unix
             }
             torrents.append(temp)
         r.append({item['name']: {'data': torrents}})
