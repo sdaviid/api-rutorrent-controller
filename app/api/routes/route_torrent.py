@@ -72,7 +72,7 @@ def list_torrents(server: ruTorrentManager = Depends(get_ruTorrentManager)):
             }
             torrents.append(temp)
         r.append({item['name']: {'data': torrents}})
-    return {'k': r}
+    return {'data': r}
 
 
 @router.get(
