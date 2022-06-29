@@ -21,6 +21,10 @@ from utils.encode import(
 
 from app.core.database import get_db
 
+from app.api.deps import(
+    get_current_active_user
+)
+
 
 
 router = APIRouter()
@@ -31,7 +35,11 @@ router = APIRouter()
     '/upload-torrent',
     status_code=status.HTTP_200_OK
 )
-async def create_upload_file(file: UploadFile, server: ruTorrentManager = Depends(get_ruTorrentManager)):
+async def create_upload_file(
+    file: UploadFile,
+    server: ruTorrentManager = Depends(get_ruTorrentManager),
+    current_user: str = Depends(get_current_active_user)
+):
     contents = await file.read()
     path_file = os.path.join(os.getcwd(), 'files', file.filename)
     if os.path.isfile(path_file) == False:
@@ -53,7 +61,10 @@ async def create_upload_file(file: UploadFile, server: ruTorrentManager = Depend
     '/list-torrents',
     status_code=status.HTTP_200_OK
 )
-def list_torrents(server: ruTorrentManager = Depends(get_ruTorrentManager)):
+def list_torrents(
+    server: ruTorrentManager = Depends(get_ruTorrentManager),
+    current_user: str = Depends(get_current_active_user)
+):
     r = []
     manager_instance = get_ruTorrentManager()
     for item in manager_instance.servers:
@@ -81,7 +92,11 @@ def list_torrents(server: ruTorrentManager = Depends(get_ruTorrentManager)):
 @router.get(
     '/status/{hash}'
 )
-def status_from_hash(hash: str, server: ruTorrentManager = Depends(get_ruTorrentManager)):
+def status_from_hash(
+    hash: str,
+    server: ruTorrentManager = Depends(get_ruTorrentManager),
+    current_user: str = Depends(get_current_active_user)
+):
     manager_instance = get_ruTorrentManager()
     if manager_instance:
         temp_data = manager_instance.find_hash(hash.upper())
@@ -109,7 +124,11 @@ def status_from_hash(hash: str, server: ruTorrentManager = Depends(get_ruTorrent
 @router.get(
     '/files/{hash}'
 )
-def get_files(hash: str, server: ruTorrentManager = Depends(get_ruTorrentManager)):
+def get_files(
+    hash: str,
+    server: ruTorrentManager = Depends(get_ruTorrentManager),
+    current_user: str = Depends(get_current_active_user)
+):
     manager_instance = get_ruTorrentManager()
     if manager_instance:
         temp_data = manager_instance.get_files_by_hash(hash.upper())
