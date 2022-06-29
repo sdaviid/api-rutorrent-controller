@@ -71,7 +71,11 @@ async def get_current_user(token: str = Depends(oauth2_scheme)):
         raise credentials_exception
     audience = payload.get('aud')
     if not audience == 'cli-web-torrent':
-        raise credentials_exception
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid JWT Audience",
+            headers={"WWW-Authenticate": "invalid_token"},
+        )
     return payload.get('sub')
 
 
