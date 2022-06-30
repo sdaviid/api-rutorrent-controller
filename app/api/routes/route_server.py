@@ -21,7 +21,7 @@ from app.models.schemas.server import(
 
 from app.core.database import get_db
 from app.api.deps import(
-    get_current_active_user
+    allow_create_resource
 )
 
 router = APIRouter()
@@ -31,13 +31,13 @@ router = APIRouter()
 @router.post(
     '/add',
     status_code=status.HTTP_200_OK,
-    response_model=ServerDetail
+    response_model=ServerDetail,
+    dependencies=[Depends(allow_create_resource)]
 )
 def add_user(
     data: ServerAdd,
     response: Response,
-    db: Session = Depends(get_db),
-    current_user: str = Depends(get_current_active_user)
+    db: Session = Depends(get_db)
 ):
     return Server.add(session=db, data=data)
 
@@ -45,11 +45,11 @@ def add_user(
 @router.get(
     '/list',
     status_code=status.HTTP_200_OK,
-    response_model=List[ServerDetail]
+    response_model=List[ServerDetail],
+    dependencies=[Depends(allow_create_resource)]
 )
 def list_all(
     response: Response,
     db: Session=Depends(get_db),
-    current_user: str = Depends(get_current_active_user)
 ):
     return Server.list_all(session=db)

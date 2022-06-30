@@ -22,7 +22,7 @@ from utils.encode import(
 from app.core.database import get_db
 
 from app.api.deps import(
-    get_current_active_user
+    allow_create_resource
 )
 
 
@@ -33,12 +33,12 @@ router = APIRouter()
 
 @router.post(
     '/upload-torrent',
-    status_code=status.HTTP_200_OK
+    status_code=status.HTTP_200_OK,
+    dependencies=[Depends(allow_create_resource)]
 )
 async def create_upload_file(
     file: UploadFile,
-    server: ruTorrentManager = Depends(get_ruTorrentManager),
-    current_user: str = Depends(get_current_active_user)
+    server: ruTorrentManager = Depends(get_ruTorrentManager)
 ):
     contents = await file.read()
     path_file = os.path.join(os.getcwd(), 'files', file.filename)
@@ -59,11 +59,11 @@ async def create_upload_file(
 
 @router.get(
     '/list-torrents',
-    status_code=status.HTTP_200_OK
+    status_code=status.HTTP_200_OK,
+    dependencies=[Depends(allow_create_resource)]
 )
 def list_torrents(
-    server: ruTorrentManager = Depends(get_ruTorrentManager),
-    current_user: str = Depends(get_current_active_user)
+    server: ruTorrentManager = Depends(get_ruTorrentManager)
 ):
     r = []
     manager_instance = get_ruTorrentManager()
@@ -90,12 +90,12 @@ def list_torrents(
 
 
 @router.get(
-    '/status/{hash}'
+    '/status/{hash}',
+    dependencies=[Depends(allow_create_resource)]
 )
 def status_from_hash(
     hash: str,
-    server: ruTorrentManager = Depends(get_ruTorrentManager),
-    current_user: str = Depends(get_current_active_user)
+    server: ruTorrentManager = Depends(get_ruTorrentManager)
 ):
     manager_instance = get_ruTorrentManager()
     if manager_instance:
@@ -122,12 +122,12 @@ def status_from_hash(
 
 
 @router.get(
-    '/files/{hash}'
+    '/files/{hash}',
+    dependencies=[Depends(allow_create_resource)]
 )
 def get_files(
     hash: str,
-    server: ruTorrentManager = Depends(get_ruTorrentManager),
-    current_user: str = Depends(get_current_active_user)
+    server: ruTorrentManager = Depends(get_ruTorrentManager)
 ):
     manager_instance = get_ruTorrentManager()
     if manager_instance:
