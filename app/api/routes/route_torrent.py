@@ -156,7 +156,8 @@ def get_files(
 
 @router.get(
     '/status',
-    status_code=status.HTTP_200_OK
+    status_code=status.HTTP_200_OK,
+    dependencies=[Depends(allow_create_resource)]
 )
 def status(
     server: ruTorrentManager = Depends(get_ruTorrentManager)
