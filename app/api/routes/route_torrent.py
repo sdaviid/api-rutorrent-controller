@@ -151,3 +151,34 @@ def get_files(
                 data['files'].append(data_file)
             return data
     return {"error": True}
+
+
+
+@router.get(
+    '/status',
+    status_code=status.HTTP_200_OK
+)
+def status(
+    server: ruTorrentManager = Depends(get_ruTorrentManager)
+):
+    r = []
+    manager_instance = get_ruTorrentManager()
+    for item in manager_instance.servers:
+        downloading = 0
+        uploading = 0
+        total_files = len(item['server'].torrents)
+        total_bytes = 0
+        keys = list(item['server'].torrents.keys())
+        for key in keys:
+            torrent = item['server'].torrents[key]
+            downloading += torrent.speed_down
+            uploading = torrent.speed_up
+            total_bytes += torrent.size
+        data = {
+            'downloading': downloading,
+            'uploading': uploading,
+            'total_files': total_files,
+            'total_bytes': total_bytes
+        }
+        r.append({item['name']: {'data': data}})
+    return {'data': r}
