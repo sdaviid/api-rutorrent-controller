@@ -5,3 +5,4 @@ uvicorn==0.17.6
 sqlalchemy==1.4.32
 jose==1.0.0
 python-multipart==0.0.5	
+python_jose==3.3.0
