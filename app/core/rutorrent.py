@@ -163,6 +163,23 @@ class ruTorrentClient(Thread):
             except Exception as err:
                 print(f'ruTorrentClient.add_torrent exception - {err}')
         return False
+    def delete(self, hash):
+        if self.active:
+            url = f'{self.base}/plugins/httprpc/action.php'
+            headers = self.gen_header()
+            if headers:
+                headers.update({
+                    'content-type': 'text/xml; charset=UTF-8'
+                })
+            payload = f'<?xml version="1.0" encoding="UTF-8"?><methodCall><methodName>system.multicall</methodName><params><param><value><array><data><value><struct><member><name>methodName</name><value><string>d.custom5.set</string></value></member><member><name>params</name><value><array><data><value><string>{hash}</string></value><value><string>1</string></value></data></array></value></member></struct></value><value><struct><member><name>methodName</name><value><string>d.delete_tied</string></value></member><member><name>params</name><value><array><data><value><string>{hash}</string></value></data></array></value></member></struct></value><value><struct><member><name>methodName</name><value><string>d.erase</string></value></member><member><name>params</name><value><array><data><value><string>{hash}</string></value></data></array></value></member></struct></value></data></array></value></param></params></methodCall>'
+            try:
+                response = requests.post(url, data=payload, headers=headers)
+                if response.status_code == 200:
+                    if 'could not' not in response.text.lower():
+                        return True
+            except Exception as err:
+                print(f'ruTorrentClient.delete excepetion - {err}')
+        return False
 
 
 
@@ -195,6 +212,11 @@ class ruTorrentManager(Thread):
         for server in self.servers:
             if hash in server['server'].torrents:
                 return server['server'].torrents[hash]
+        return False
+    def delete_by_hash(self, hash):
+        torrent = self.find_hash(hash)
+        if torrent:
+            return torrent.client.delete(hash)
         return False
     def get_files_by_hash(self, hash):
         for server in self.servers:

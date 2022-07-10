@@ -89,6 +89,34 @@ def list_torrents(
     return {'data': r}
 
 
+
+@router.delete(
+    '/delete/{hash}',
+    dependencies=[Depends(allow_create_resource)]
+)
+def delete(
+    hash: str,
+    server: ruTorrentManager = Depends(get_ruTorrentManager)
+):
+    manager_instance = get_ruTorrentManager()
+    if manager_instance:
+        if manager_instance.delete_by_hash(hash) == True:
+            return {
+                "error": False,
+                "message": None
+            }
+        else:
+            return {
+                "error": True,
+                "message": "Didnt find hash"
+            }
+    else:
+        return {
+            "error": True,
+            "message": "Failed load torrent manager"
+        }
+
+
 @router.get(
     '/status/{hash}',
     dependencies=[Depends(allow_create_resource)]
