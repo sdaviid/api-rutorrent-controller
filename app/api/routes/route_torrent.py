@@ -91,7 +91,7 @@ def list_torrents(
 
 
 @router.delete(
-    '/delete/{hash}',
+    '/{hash}',
     dependencies=[Depends(allow_create_resource)]
 )
 def delete(
