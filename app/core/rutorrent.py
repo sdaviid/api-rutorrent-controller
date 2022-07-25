@@ -112,13 +112,14 @@ class ruTorrentClient(Thread):
         if isinstance(torrents, requests.models.Response):
             if torrents.status_code == 200:
                 data = torrents.json().get('t', {})
-                hash_keys = list(data.keys())
-                for key in hash_keys:
-                    if key in self.torrents:
-                        self.torrents[key].update(data.get(key, {}))
-                    else:
-                        self.torrents.update({key: ruTorrentData(self, data.get(key, {}), key)})
-                return True
+                if data:
+                    hash_keys = list(data.keys())
+                    for key in hash_keys:
+                        if key in self.torrents:
+                            self.torrents[key].update(data.get(key, {}))
+                        else:
+                            self.torrents.update({key: ruTorrentData(self, data.get(key, {}), key)})
+                    return True
         return False
     def get_files_from(self, hash):
         url = f'{self.base}/plugins/httprpc/action.php'
